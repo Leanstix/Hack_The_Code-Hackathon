@@ -1,4 +1,5 @@
 import sys
+import os
 
 def parse_input(file_path):
     with open(file_path, 'r', encoding='utf-8') as f:
@@ -66,15 +67,22 @@ def generate_output(D, resources, turns):
     return output_lines
 
 
-def main(input_file, output_file):
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python script.py <input_file>")
+        sys.exit(1)
+    
+    input_file = sys.argv[1]
+    output_file = os.path.splitext(input_file)[0] + "1.txt"
+    
     D, resources, turns = parse_input(input_file)
     output_lines = generate_output(D, resources, turns)
     
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write("\n".join(output_lines) + "\n")
+    
+    print(f"Output written to {output_file}")
 
 
 if __name__ == "__main__":
-    input_path = "0-demo.txt"  # Change this if needed
-    output_path = "output.txt"
-    main(input_path, output_path)
+    main()
