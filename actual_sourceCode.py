@@ -1,7 +1,3 @@
-# Read the input file and parse the game parameters
-input_file_path = "./0-demo.txt"
-output_file_path = "./biogas_simulation_output.txt"
-
 def read_input_file(filename):
     with open(filename, "r", encoding="ascii") as f:
         lines = f.read().strip().split("\n")
@@ -84,6 +80,5 @@ def simulate_biogas_generator(input_file, output_file):
 
     return output_file
 
-# Run the simulation and generate output
-simulate_biogas_generator(input_file_path, output_file_path)
-output_file_path
+# Example usage
+# simulate_biogas_generator("input.txt", "output.txt")
