@@ -4,6 +4,7 @@ def read_input_file(filename):
     
     # Read initial game parameters
     D, R, T = map(int, lines[0].split())
+    D = max(D, 16)  # Ensure budget is at least 16 for activation
 
     # Read resources
     resources = []
@@ -28,11 +29,15 @@ def read_input_file(filename):
 def simulate_biogas_generator(input_file, output_file):
     # Read input parameters
     budget, resources, turns = read_input_file(input_file)
+    output_lines = ["Simulation started."]
 
     # Identify biogas generator (D-type resource)
     biogas = next((r for r in resources if r["RT"] == "D"), None)
     if not biogas:
-        raise ValueError("No biogas (D-type) resource found in the input.")
+        output_lines.append("Error: No biogas (D-type) resource found in the input.")
+        with open(output_file, "w", encoding="utf-8") as f:
+            f.write("\n".join(output_lines))
+        return
 
     RA, RP, RW, RM, RL, RU, RE = (biogas["RA"], biogas["RP"], biogas["RW"], 
                                    biogas["RM"], biogas["RL"], biogas["RU"], biogas["RE"])
@@ -41,10 +46,16 @@ def simulate_biogas_generator(input_file, output_file):
     active_turns = 0
     downtime_turns = 0
     resource_active = False
-    output_lines = []
 
+    output_lines.append(f"Initial Budget: ${budget}")
+    output_lines.append(f"Biogas Generator Activation Cost: ${RA}")
+
+    if budget < RA:
+        output_lines.append("Insufficient budget to activate Biogas Generator.")
+    
     for turn_index, turn in enumerate(turns, 1):
         TM, TX, TR = turn["TM"], turn["TX"], turn["TR"]
+        output_lines.append(f"Turn {turn_index}: Min {TM}, Max {TX}, Profit per building {TR}")
 
         if not resource_active and budget >= RA:
             budget -= RA
@@ -74,7 +85,10 @@ def simulate_biogas_generator(input_file, output_file):
                 resource_active = True
                 active_turns = RW
                 output_lines.append(f"Turn {turn_index}: Biogas Generator is operational again.")
-
+    
+    if not output_lines:
+        output_lines.append("No activity recorded. Check input values.")
+    
     with open(output_file, "w", encoding="utf-8") as f:
         f.write("\n".join(output_lines))
 
